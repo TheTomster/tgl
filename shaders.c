@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static char * load_file(const char * filename, GLint * length);
+static char *load_file(const char *filename, GLint *length);
 static int compile_shader(GLuint shader);
 
 // The buffer returned by load_file is malloc'd and needs to be free'd by the
 // caller.
-static char * load_file(const char * filename, GLint * length) {
-  FILE * fd = fopen(filename, "r");
+static char *load_file(const char *filename, GLint *length) {
+  FILE *fd = fopen(filename, "r");
   if (fd == 0) {
     fprintf(stderr, "Unable to open %s for reading.\n", filename);
     return NULL;
@@ -21,7 +21,7 @@ static char * load_file(const char * filename, GLint * length) {
   fseek(fd, 0, SEEK_END);
   len = ftell(fd);
   fseek(fd, 0, SEEK_SET);
-  char * buffer = malloc(len + 1);
+  char *buffer = malloc(len + 1);
   len = fread(buffer, 1, len, fd);
   fclose(fd);
   buffer[len] = '\0';
@@ -40,7 +40,7 @@ static int compile_shader(GLuint shader) {
     fprintf(stderr, "Failed to compile shader:\n");
     GLint log_length;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-    char * log = malloc(log_length + 1);
+    char *log = malloc(log_length + 1);
     glGetShaderInfoLog(shader, log_length + 1, NULL, log);
     fprintf(stderr, "%s", log);
     free(log);
@@ -50,11 +50,11 @@ static int compile_shader(GLuint shader) {
   return 1;
 }
 
-GLuint tgl_make_shader(GLenum type, tgl_shaderset ss) {
+GLuint tgl_make_shader(GLenum type, struct tgl_shaderset ss) {
   GLuint shader;
   shader = glCreateShader(type);
 
-  const char * sources[ss.nfiles];
+  const char *sources[ss.nfiles];
   for (int i = 0; i < ss.nfiles; i++) {
     sources[i] = load_file(ss.filenames[i], NULL);
   }
@@ -90,7 +90,7 @@ GLuint tgl_make_program(
     fprintf(stderr, "Failed to link program\n");
     GLint log_length;
     glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
-    char * log = malloc(log_length + 1);
+    char *log = malloc(log_length + 1);
     glGetProgramInfoLog(program, log_length + 1, NULL, log);
     fprintf(stderr, "%s", log);
     free(log);
